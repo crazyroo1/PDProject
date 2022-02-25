@@ -31,7 +31,7 @@ public class SThread extends Thread {
 
 			// waits 10 seconds to let the routing table fill with all machines' information
 			try {
-				Thread.currentThread().sleep(1000);
+				Thread.currentThread().sleep(10000);
 			} catch (InterruptedException ie) {
 				System.out.println("Thread interrupted");
 			}
@@ -56,6 +56,11 @@ public class SThread extends Thread {
 					outTo.println(outputLine); // writes to the destination
 				}
 			} // end while
+
+			in.close();
+			System.out.println("got here 1");
+			outSocket.close();
+			System.out.println("got here 2");
 		} // end try
 		catch (IOException e) {
 			System.err.println("Could not listen to socket.");
