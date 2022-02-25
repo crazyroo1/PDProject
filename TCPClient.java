@@ -9,9 +9,9 @@ public class TCPClient {
       PrintWriter out = null; // for writing to ServerRouter
       BufferedReader in = null; // for reading form ServerRouter
       InetAddress addr = InetAddress.getLocalHost();
-      String host = addr.getHostAddress(); // Client machine's IP
-      String routerName = "127.0.0.1"; // ServerRouter host name
-      int SockNum = 5555; // port number
+      String host = "2.tcp.ngrok.io";//addr.getHostAddress(); // Client machine's IP
+      String routerName = "2.tcp.ngrok.io"; // ServerRouter host name
+      int SockNum = 17937; // port number
 
       // Tries to connect to the ServerRouter
       try {
@@ -31,7 +31,7 @@ public class TCPClient {
       BufferedReader fromFile = new BufferedReader(reader); // reader for the string file
       String fromServer; // messages received from ServerRouter
       String fromUser; // messages sent to ServerRouter
-      String address = "127.0.0.1"; // destination IP (Server)
+      String address = "127.0.0.1"; //"2.tcp.ngrok.io"; // destination IP (Server)
       long t0, t1, t;
 
       // Communication process (initial sends/receives
