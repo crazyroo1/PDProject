@@ -27,10 +27,11 @@ public class TCPClient {
       }
 
       // Variables for message passing
-      Reader reader = new FileReader("file.txt");
-      BufferedReader fromFile = new BufferedReader(reader); // reader for the string file
+      InputStream inputStream = new FileInputStream("file.txt");
+      // Reader reader = new FileReader("file.txt");
+      // BufferedReader fromFile = new BufferedReader(reader); // reader for the string file
       String fromServer; // messages received from ServerRouter
-      String fromUser; // messages sent to ServerRouter
+      int fromUser; // messages sent to ServerRouter
       String address = "127.0.0.1"; //"2.tcp.ngrok.io"; // destination IP (Server)
       long t0, t1, t;
 
@@ -50,8 +51,8 @@ public class TCPClient {
          t = t1 - t0;
          System.out.println("Cycle time: " + t);
 
-         fromUser = fromFile.readLine(); // reading strings from a file
-         if (fromUser != null) {
+         fromUser = inputStream.read(); // reading strings from a file
+         if (fromUser != -1) {
             System.out.println("Client: " + fromUser);
             out.println(fromUser); // sending the strings to the Server via ServerRouter
             t0 = System.currentTimeMillis();

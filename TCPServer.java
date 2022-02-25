@@ -42,6 +42,15 @@ public class TCPServer {
          System.out.println("Client said: " + fromClient);
          if (fromClient.equals("Bye.")) // exit statement
             break;
+
+         // write file
+         OutputStream outputStream = new FileOutputStream("downloadedFile.avi");
+         int byteRead = -1;
+         while((byteRead = in.read()) != -1) {
+            outputStream.write(byteRead);
+         }
+
+
          fromServer = fromClient.toUpperCase(); // converting received message to upper case
          System.out.println("Server said: " + fromServer);
          out.println(fromServer); // sending the converted message back to the Client via ServerRouter
