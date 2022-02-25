@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 
 public class TCPServer {
    public static void main(String[] args) throws IOException {
@@ -13,7 +14,7 @@ public class TCPServer {
       // String host = "2.tcp.ngrok.io";
       String routerName = "127.0.0.1"; // ServerRouter host name
       int SockNum = 5555; // port number
-
+      InputStreamReader inReader;
       // Tries to connect to the ServerRouter
       try {
          Socket = new Socket(routerName, SockNum);
@@ -27,6 +28,8 @@ public class TCPServer {
          System.exit(1);
       }
 
+
+      inReader = new InputStreamReader(Socket.getInputStream());
       // Variables for message passing
       String fromServer; // messages sent to ServerRouter
       String fromClient; // messages received from ServerRouter
@@ -37,29 +40,51 @@ public class TCPServer {
       fromClient = in.readLine();// initial receive from router (verification of connection)
       System.out.println("ServerRouter: " + fromClient);
 
-      // Communication while loop
-      while ((fromClient = in.readLine()) != null) {
-         System.out.println("Client said: " + fromClient);
-         if (fromClient.equals("Bye.")) // exit statement
-            break;
 
-         // write file
-         OutputStream outputStream = new FileOutputStream("downloadedFile.avi");
+
+      receiveBytesAndWriteToFile(Socket, "downloadedFile.mov");
+
+      // close all connections
+      in.close();
+      out.close();
+      Socket.close();
+   }
+
+   public static void receiveBytesAndWriteToFile(Socket source, String filename) {
+      try {
+         InputStream inputStream = source.getInputStream(); // get the input stream
+         OutputStream outputStream = new FileOutputStream(filename); // get the output stream
+
          int byteRead = -1;
-         while((byteRead = in.read()) != -1) {
-            outputStream.write(byteRead);
+         int byteCount = 0;
+         // read the data and write to file
+
+         ArrayList<Integer> byteArray = new ArrayList<Integer>();
+
+         System.out.println("Receiving file...");
+         while ((byteRead = inputStream.read()) != -1) {
+            // outputStream.write(byteRead);
+            byteArray.add(byteRead);
+            byteCount++;
+            double megabyteCount = byteCount / 1000000.0;
+            if(megabyteCount % 1 == 0) {
+               System.out.println("Received " + megabyteCount + " MB");
+            }
+         }
+         System.out.println("File received");
+
+         System.out.println("Writing file...");
+         // convert arraylist to array
+         byte[] bytes = new byte[byteArray.size()];
+         for(int i = 0; i < byteArray.size(); i++) {
+            bytes[i] = byteArray.get(i).byteValue();
          }
 
-
-         fromServer = fromClient.toUpperCase(); // converting received message to upper case
-         System.out.println("Server said: " + fromServer);
-         out.println(fromServer); // sending the converted message back to the Client via ServerRouter
+         outputStream.write(bytes); // write to file
+         System.out.println("File written");
+         outputStream.close();
+      } catch (Exception e) {
+         e.printStackTrace();
       }
-
-      // closing connections
-      System.out.println("got here");
-      out.close();
-      in.close();
-      Socket.close();
    }
 }

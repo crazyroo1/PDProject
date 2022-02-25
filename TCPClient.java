@@ -9,9 +9,9 @@ public class TCPClient {
       PrintWriter out = null; // for writing to ServerRouter
       BufferedReader in = null; // for reading form ServerRouter
       InetAddress addr = InetAddress.getLocalHost();
-      String host = "2.tcp.ngrok.io";//addr.getHostAddress(); // Client machine's IP
-      String routerName = "2.tcp.ngrok.io"; // ServerRouter host name
-      int SockNum = 17937; // port number
+      String host = "8.tcp.ngrok.io";//addr.getHostAddress(); // Client machine's IP
+      String routerName = "8.tcp.ngrok.io"; // ServerRouter host name
+      int SockNum = 13139; // port number
 
       // Tries to connect to the ServerRouter
       try {
@@ -26,42 +26,39 @@ public class TCPClient {
          System.exit(1);
       }
 
-      // Variables for message passing
-      InputStream inputStream = new FileInputStream("file.txt");
-      // Reader reader = new FileReader("file.txt");
-      // BufferedReader fromFile = new BufferedReader(reader); // reader for the string file
-      String fromServer; // messages received from ServerRouter
-      int fromUser; // messages sent to ServerRouter
       String address = "127.0.0.1"; //"2.tcp.ngrok.io"; // destination IP (Server)
-      long t0, t1, t;
 
       // Communication process (initial sends/receives
       out.println(address);// initial send (IP of the destination Server)
-      fromServer = in.readLine();// initial receive from router (verification of connection)
-      System.out.println("ServerRouter: " + fromServer);
-      out.println(host); // Client sends the IP of its machine as initial send
-      t0 = System.currentTimeMillis();
+      String verification = in.readLine();// initial receive from router (verification of connection)
+      System.out.println("ServerRouter: " + verification); // print verification
 
-      // Communication while loop
-      while ((fromServer = in.readLine()) != null) {
-         System.out.println("Server: " + fromServer);
-         t1 = System.currentTimeMillis();
-         if (fromServer.equals("Bye.")) // exit statement
-            break;
-         t = t1 - t0;
-         System.out.println("Cycle time: " + t);
+      sendBinaryFileToDestination("video.mov", Socket); // send the file to the destination
+      System.out.println("File sent"); 
 
-         fromUser = inputStream.read(); // reading strings from a file
-         if (fromUser != -1) {
-            System.out.println("Client: " + fromUser);
-            out.println(fromUser); // sending the strings to the Server via ServerRouter
-            t0 = System.currentTimeMillis();
-         }
-      }
-
-      // closing connections
-      out.close();
+      // close all connections
       in.close();
+      out.close();
       Socket.close();
+
+   }
+
+   public static void sendBinaryFileToDestination(String fileName, Socket destination) throws IOException {
+      File file = new File(fileName);
+      InputStream inputStream = new FileInputStream(file); // input stream for the file
+
+      System.out.println("Reading file...");
+      byte[] bytes = inputStream.readAllBytes(); // read the file
+      System.out.println("File read");
+      
+      OutputStream outputStream = destination.getOutputStream(); // output stream for the file
+      inputStream.close();
+      long t1 = System.currentTimeMillis();
+      System.out.println("Sending file...");
+      outputStream.write(bytes); // write the file to the destination
+      System.out.println("File sent");
+      long t2 = System.currentTimeMillis();
+      System.out.println("Time to send: " + (t2 - t1) + " ms");
+      outputStream.close();
    }
 }

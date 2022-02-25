@@ -6,19 +6,30 @@ public class SThread extends Thread {
 	private Object[][] RTable; // routing table
 	private PrintWriter out, outTo; // writers (for writing back to the machine and to destination)
 	private BufferedReader in; // reader (for reading from the machine connected to)
-	private String inputLine, outputLine, destination, addr; // communication strings
+	private int inputLine, outputLine; 
+	private String destination, addr; // communication strings
+	private Socket inSocket;
 	private Socket outSocket; // socket for communicating with a destination
 	private int ind; // indext in the routing table
 
 	// Constructor
 	SThread(Object[][] Table, Socket toClient, int index) throws IOException {
 		out = new PrintWriter(toClient.getOutputStream(), true);
+		inSocket = toClient;
 		in = new BufferedReader(new InputStreamReader(toClient.getInputStream()));
 		RTable = Table;
 		addr = toClient.getInetAddress().getHostAddress();
 		RTable[index][0] = addr; // IP addresses
 		RTable[index][1] = toClient; // sockets for communication
 		ind = index;
+
+		// iterate through Table and print all objects in the table
+		for (int i = 0; i < RTable.length; i++) {
+			for (int j = 0; j < RTable[i].length; j++) {
+				System.out.print(RTable[i][j] + " ");
+			}
+			System.out.println();
+		}
 	}
 
 	// Run method (will run for each machine that connects to the ServerRouter)
@@ -31,7 +42,7 @@ public class SThread extends Thread {
 
 			// waits 10 seconds to let the routing table fill with all machines' information
 			try {
-				Thread.currentThread().sleep(10000);
+				Thread.currentThread().sleep(100);
 			} catch (InterruptedException ie) {
 				System.out.println("Thread interrupted");
 			}
@@ -41,30 +52,35 @@ public class SThread extends Thread {
 				if (destination.equals((String) RTable[i][0])) {
 					outSocket = (Socket) RTable[i][1]; // gets the socket for communication from the table
 					System.out.println("Found destination: " + destination);
+
 					outTo = new PrintWriter(outSocket.getOutputStream(), true); // assigns a writer
 				}
 			}
 
-			// Communication loop
-			while ((inputLine = in.readLine()) != null) {
-				System.out.println("Client/Server said: " + inputLine);
-				if (inputLine.equals("Bye.")) // exit statement
-					break;
-				outputLine = inputLine; // passes the input from the machine to the output string for the destination
+			// send the data
+			forwardBytesFromSourceSocketToDestinationSocket(inSocket, outSocket);
 
-				if (outSocket != null) {
-					outTo.println(outputLine); // writes to the destination
-				}
-			} // end while
-
+			// close all connections
 			in.close();
-			System.out.println("got here 1");
+			out.close();
+			inSocket.close();
+			outTo.close();
 			outSocket.close();
-			System.out.println("got here 2");
 		} // end try
 		catch (IOException e) {
 			System.err.println("Could not listen to socket.");
 			System.exit(1);
 		}
+	} 
+
+	public static void forwardBytesFromSourceSocketToDestinationSocket(Socket source, Socket destination) throws IOException {
+		DataInputStream in = new DataInputStream(source.getInputStream());
+		DataOutputStream out = new DataOutputStream(destination.getOutputStream());
+		int inputLine;
+		System.out.println("Forwarding data...");
+		while ((inputLine = in.read()) != -1) {
+			out.write(inputLine);
+		}
+		System.out.println("Forwarding complete.");
 	}
 } 
