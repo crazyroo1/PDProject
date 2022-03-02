@@ -10,8 +10,8 @@ public class TCPClient {
       BufferedReader in = null; // for reading form ServerRouter
       InetAddress addr = InetAddress.getLocalHost();
       String host = "8.tcp.ngrok.io";//addr.getHostAddress(); // Client machine's IP
-      String routerName = "8.tcp.ngrok.io"; // ServerRouter host name
-      int SockNum = 13139; // port number
+      String routerName = "142.44.163.24"; // ServerRouter host name
+      int SockNum = 5555; // port number
 
       // Tries to connect to the ServerRouter
       try {
