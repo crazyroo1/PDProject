@@ -63,9 +63,11 @@ public class TCPServer {
 
          System.out.println("Waiting for data...");
          boolean receivingBegan = false;
+         long t1 = 0, t2 = 0;
          while ((byteRead = inputStream.read()) != -1) { // read the file
             if (!receivingBegan) {
                receivingBegan = true;
+               t1 = System.currentTimeMillis();
                System.out.println("Receiving file...");
             }
 
@@ -77,6 +79,10 @@ public class TCPServer {
                System.out.println("Received " + megabyteCount + " MB"); // print the megabyte count
             }
          }
+         t2 = System.currentTimeMillis();
+
+         System.out.println("Time to receive: " + (t2 - t1) + " ms"); 
+
          System.out.println("File received");
 
          System.out.println("Writing file...");
