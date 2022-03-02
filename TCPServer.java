@@ -12,7 +12,7 @@ public class TCPServer {
       InetAddress addr = InetAddress.getLocalHost();
       String host = addr.getHostAddress(); // Server machine's IP
       // String host = "2.tcp.ngrok.io";
-      String routerName = "142.44.163.24"; // ServerRouter host name
+      String routerName = "127.0.0.1"; // ServerRouter host name
       int SockNum = 5555; // port number
       InputStreamReader inReader;
       // Tries to connect to the ServerRouter
@@ -33,7 +33,7 @@ public class TCPServer {
       // Variables for message passing
       String fromServer; // messages sent to ServerRouter
       String fromClient; // messages received from ServerRouter
-      String address = "168.28.186.188"; // destination IP (Client)
+      String address = "127.0.0.1"; // destination IP (Client)
 
       // Communication process (initial sends/receives)
       out.println(address);// initial send (IP of the destination Client)
@@ -68,7 +68,7 @@ public class TCPServer {
                receivingBegan = true;
                System.out.println("Receiving file...");
             }
-            
+
             byteArray.add(byteRead); // add the byte to the array
             byteCount++; // increment the byte count
 
