@@ -74,13 +74,16 @@ public class SThread extends Thread {
 	} 
 
 	public static void forwardBytesFromSourceSocketToDestinationSocket(Socket source, Socket destination) throws IOException {
-		DataInputStream in = new DataInputStream(source.getInputStream());
-		DataOutputStream out = new DataOutputStream(destination.getOutputStream());
+		DataInputStream in = new DataInputStream(source.getInputStream()); // input stream
+		DataOutputStream out = new DataOutputStream(destination.getOutputStream()); // output stream
 		int inputLine;
 		System.out.println("Forwarding data...");
-		while ((inputLine = in.read()) != -1) {
-			out.write(inputLine);
+		while ((inputLine = in.read()) != -1) { // reads until the end of the stream
+			out.write(inputLine); // write the data to the destination
 		}
 		System.out.println("Forwarding complete.");
+
+		in.close();
+		out.close();
 	}
 } 

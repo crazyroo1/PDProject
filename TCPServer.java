@@ -62,27 +62,26 @@ public class TCPServer {
          ArrayList<Integer> byteArray = new ArrayList<Integer>();
 
          System.out.println("Receiving file...");
-         while ((byteRead = inputStream.read()) != -1) {
-            // outputStream.write(byteRead);
-            byteArray.add(byteRead);
-            byteCount++;
-            double megabyteCount = byteCount / 1000000.0;
-            if(megabyteCount % 1 == 0) {
-               System.out.println("Received " + megabyteCount + " MB");
+         while ((byteRead = inputStream.read()) != -1) { // read the file
+            byteArray.add(byteRead); // add the byte to the array
+            byteCount++; // increment the byte count
+
+            double megabyteCount = byteCount / 1000000.0; // calculate the megabyte count
+            if(megabyteCount % 1 == 0) { // if the megabyte count is a whole number
+               System.out.println("Received " + megabyteCount + " MB"); // print the megabyte count
             }
          }
          System.out.println("File received");
 
          System.out.println("Writing file...");
-         // convert arraylist to array
-         byte[] bytes = new byte[byteArray.size()];
-         for(int i = 0; i < byteArray.size(); i++) {
-            bytes[i] = byteArray.get(i).byteValue();
+         byte[] bytes = new byte[byteArray.size()]; 
+         for(int i = 0; i < byteArray.size(); i++) { 
+            bytes[i] = byteArray.get(i).byteValue(); // convert the arraylist to a byte array
          }
 
          outputStream.write(bytes); // write to file
          System.out.println("File written");
-         outputStream.close();
+         outputStream.close(); // close the output stream
       } catch (Exception e) {
          e.printStackTrace();
       }

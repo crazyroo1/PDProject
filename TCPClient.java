@@ -49,16 +49,16 @@ public class TCPClient {
 
       System.out.println("Reading file...");
       byte[] bytes = inputStream.readAllBytes(); // read the file
+      inputStream.close(); // close the input stream
       System.out.println("File read");
       
       OutputStream outputStream = destination.getOutputStream(); // output stream for the file
-      inputStream.close();
-      long t1 = System.currentTimeMillis();
+      long t1 = System.currentTimeMillis(); // start time
       System.out.println("Sending file...");
       outputStream.write(bytes); // write the file to the destination
-      System.out.println("File sent");
-      long t2 = System.currentTimeMillis();
-      System.out.println("Time to send: " + (t2 - t1) + " ms");
-      outputStream.close();
+      System.out.println("File sent"); 
+      long t2 = System.currentTimeMillis(); // end time
+      System.out.println("Time to send: " + (t2 - t1) + " ms"); 
+      outputStream.close(); // close the output stream
    }
 }
