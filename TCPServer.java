@@ -42,7 +42,7 @@ public class TCPServer {
 
 
 
-      receiveBytesAndWriteToFile(Socket, "downloadedImage.jpg");
+      receiveBytesAndWriteToFile(Socket, "downloadedImage.jpeg");
 
       // close all connections
       in.close();
