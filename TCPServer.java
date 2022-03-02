@@ -61,8 +61,14 @@ public class TCPServer {
 
          ArrayList<Integer> byteArray = new ArrayList<Integer>();
 
-         System.out.println("Receiving file...");
+         System.out.println("Waiting for data...");
+         boolean receivingBegan = false;
          while ((byteRead = inputStream.read()) != -1) { // read the file
+            if (!receivingBegan) {
+               receivingBegan = true;
+               System.out.println("Receiving file...");
+            }
+            
             byteArray.add(byteRead); // add the byte to the array
             byteCount++; // increment the byte count
 
