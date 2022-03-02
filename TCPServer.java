@@ -81,7 +81,7 @@ public class TCPServer {
          }
          t2 = System.currentTimeMillis();
 
-         System.out.println("Time to receive: " + (t2 - t1) + " ms"); 
+         System.out.println("Time to receive " + byteCount / 1000000.0 + " MB: " + (t2 - t1) + " ms"); 
 
          System.out.println("File received");
 

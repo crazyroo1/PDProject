@@ -33,7 +33,7 @@ public class TCPClient {
       String verification = in.readLine();// initial receive from router (verification of connection)
       System.out.println("ServerRouter: " + verification); // print verification
 
-      sendBinaryFileToDestination("image.jpeg", Socket); // send the file to the destination
+      sendBinaryFileToDestination("video.mov", Socket); // send the file to the destination
       System.out.println("File sent"); 
 
       // close all connections
