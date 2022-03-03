@@ -48,14 +48,19 @@ public class SThread extends Thread {
 			}
 
 			// loops through the routing table to find the destination
+			long t1 = 0, t2 = 0;
+			t1 = System.currentTimeMillis();
 			for (int i = 0; i < 10; i++) {
 				if (destination.equals((String) RTable[i][0])) {
 					outSocket = (Socket) RTable[i][1]; // gets the socket for communication from the table
+					t2 = System.currentTimeMillis();
 					System.out.println("Found destination: " + destination);
 
 					outTo = new PrintWriter(outSocket.getOutputStream(), true); // assigns a writer
 				}
 			}
+
+			System.out.println("Time to perform routing table lookup: " + (t2 - t1) + " ms");
 
 			// send the data
 			forwardBytesFromSourceSocketToDestinationSocket(inSocket, outSocket);
