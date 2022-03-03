@@ -86,13 +86,16 @@ public class TCPServer {
          System.out.println("File received");
 
          System.out.println("Writing file...");
+         long t3 = System.currentTimeMillis();
          byte[] bytes = new byte[byteArray.size()]; 
          for(int i = 0; i < byteArray.size(); i++) { 
             bytes[i] = byteArray.get(i).byteValue(); // convert the arraylist to a byte array
          }
 
          outputStream.write(bytes); // write to file
-         System.out.println("File written");
+         outputStream.flush();
+         long t4 = System.currentTimeMillis();
+         System.out.println("File written in " + (t4 - t3) + " ms");
          outputStream.close(); // close the output stream
       } catch (Exception e) {
          e.printStackTrace();
