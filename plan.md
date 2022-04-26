@@ -46,7 +46,12 @@ Client B
 - Forward request to client
 
 
-
+# Benchmarks
+- filesize
+- read time
+- write time
+- send time
+- receive time
 
 
 

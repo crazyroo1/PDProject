@@ -26,53 +26,38 @@ public class TCPClient {
             sendRequestToClientB();
             socket = waitForAndAcceptIncomingSocketConnection();
 
-
             // read data from data.txt
-            FileInputStream fis = new FileInputStream("data.txt");
-            byte[] data = fis.readAllBytes();
-            fis.close();
-            sendData(data, socket);
+            long readT1 = System.currentTimeMillis();
+            byte[] data = readData();
+            long readT2 = System.currentTimeMillis();
+            System.out.println("Read data from data.txt in " + (readT2 - readT1) + " ms.");
 
-            // sendString("Hello from A", socket);
-            // String uppercasedResponse = receiveString(socket);
-            // System.out.println("Received: " + uppercasedResponse);
+            // send data to B
+            long sendT1 = System.currentTimeMillis();
+            sendData(data, socket);
+            long sendT2 = System.currentTimeMillis();
+            System.out.println("Sent data to client in " + (sendT2 - sendT1) + " ms.");
+
             break;
          case B:
             // Wait for request, then connect to A
             String destinationIP = waitForRequestFromClientA();
             socket = connectToClientA(destinationIP);
 
+            // read data from A
+            long receiveT1 = System.currentTimeMillis();
             byte[] dataFromA = receiveData(socket);
-            FileOutputStream fos = new FileOutputStream("downloaded.txt");
-            fos.write(dataFromA);
-            fos.close();
+            long receiveT2 = System.currentTimeMillis();
+            System.out.println("Received data from client in " + (receiveT2 - receiveT1) + " ms.");
+
+            // write data to downloaded.txt
+            long writeT1 = System.currentTimeMillis();
+            saveData(dataFromA);
+            long writeT2 = System.currentTimeMillis();
+            System.out.println("Wrote data to downloaded.txt in " + (writeT2 - writeT1) + " ms.");
 
             // check if downloaded.txt is the same as data.txt
-            FileInputStream fis2 = new FileInputStream("data.txt");
-            byte[] originalData = fis2.readAllBytes();
-            fis2.close();
-            
-            boolean same = true;
-            if (originalData.length != dataFromA.length) {
-               same = false;
-               System.out.println("Downloaded file is not the same as data.txt");
-            } else {
-               for (int i = 0; i < originalData.length; i++) {
-                  if (originalData[i] != dataFromA[i]) {
-                     same = false;
-                     System.out.println("Downloaded file is not the same as data.txt");
-                     break;
-                  }
-               }
-            }
-
-            if (same) {
-               System.out.println("Downloaded file is the same as data.txt");
-            }
-
-            // String initialString = receiveString(socket);
-            // System.out.println("Received: " + initialString);
-            // repeatStringAsUppercasedAndSendBack(initialString, socket);
+            checkDataIntegrity(dataFromA);
             break;
          default:
             socket = null;
@@ -165,6 +150,29 @@ public class TCPClient {
       }
    }
 
+   public static byte[] readData() {
+      FileInputStream fis = null;
+      try {
+         fis = new FileInputStream("data.txt");
+      } catch (FileNotFoundException e) {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+         System.exit(1);
+      }
+
+      byte[] data = null;
+      try {
+         data = fis.readAllBytes();
+         fis.close();
+      } catch (IOException e) {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+         System.exit(1);
+      }
+
+      return data;
+   }
+
    public static void sendData(byte[] data, Socket socket) {
       try {
          OutputStream out = socket.getOutputStream();
@@ -193,6 +201,48 @@ public class TCPClient {
          bytes[i] = data.get(i).byteValue(); // convert the arraylist to a byte array
       }
       return bytes;
+   }
+
+   public static void saveData(byte[] data) {
+      FileOutputStream fos = null;
+      try {
+         fos = new FileOutputStream("downloaded.txt");
+      } catch (FileNotFoundException e) {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+      }
+
+      try {
+         fos.write(data);
+         fos.close();
+      } catch (IOException e) {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+      }
+   }
+
+   public static void checkDataIntegrity(byte[] data) throws IOException {
+      FileInputStream fis2 = new FileInputStream("data.txt");
+      byte[] originalData = fis2.readAllBytes();
+      fis2.close();
+      
+      boolean same = true;
+      if (originalData.length != data.length) {
+         same = false;
+         System.out.println("Downloaded file is not the same as data.txt");
+      } else {
+         for (int i = 0; i < originalData.length; i++) {
+            if (originalData[i] != data[i]) {
+               same = false;
+               System.out.println("Downloaded file is not the same as data.txt");
+               break;
+            }
+         }
+      }
+
+      if (same) {
+         System.out.println("Downloaded file is the same as data.txt");
+      }
    }
 
    public static String receiveString(Socket socket) {
