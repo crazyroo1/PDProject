@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 
 enum ClientIdentifier {
    A, // Initial sender
@@ -25,18 +26,53 @@ public class TCPClient {
             sendRequestToClientB();
             socket = waitForAndAcceptIncomingSocketConnection();
 
-            sendString("Hello from A", socket);
-            String uppercasedResponse = receiveString(socket);
-            System.out.println("Received: " + uppercasedResponse);
+
+            // read data from data.txt
+            FileInputStream fis = new FileInputStream("data.txt");
+            byte[] data = fis.readAllBytes();
+            fis.close();
+            sendData(data, socket);
+
+            // sendString("Hello from A", socket);
+            // String uppercasedResponse = receiveString(socket);
+            // System.out.println("Received: " + uppercasedResponse);
             break;
          case B:
             // Wait for request, then connect to A
             String destinationIP = waitForRequestFromClientA();
             socket = connectToClientA(destinationIP);
 
-            String initialString = receiveString(socket);
-            System.out.println("Received: " + initialString);
-            repeatStringAsUppercasedAndSendBack(initialString, socket);
+            byte[] dataFromA = receiveData(socket);
+            FileOutputStream fos = new FileOutputStream("downloaded.txt");
+            fos.write(dataFromA);
+            fos.close();
+
+            // check if downloaded.txt is the same as data.txt
+            FileInputStream fis2 = new FileInputStream("data.txt");
+            byte[] originalData = fis2.readAllBytes();
+            fis2.close();
+            
+            boolean same = true;
+            if (originalData.length != dataFromA.length) {
+               same = false;
+               System.out.println("Downloaded file is not the same as data.txt");
+            } else {
+               for (int i = 0; i < originalData.length; i++) {
+                  if (originalData[i] != dataFromA[i]) {
+                     same = false;
+                     System.out.println("Downloaded file is not the same as data.txt");
+                     break;
+                  }
+               }
+            }
+
+            if (same) {
+               System.out.println("Downloaded file is the same as data.txt");
+            }
+
+            // String initialString = receiveString(socket);
+            // System.out.println("Received: " + initialString);
+            // repeatStringAsUppercasedAndSendBack(initialString, socket);
             break;
          default:
             socket = null;
@@ -127,6 +163,36 @@ public class TCPClient {
          System.err.println("Couldn't get I/O for the connection to: " + localhost);
          System.exit(1);
       }
+   }
+
+   public static void sendData(byte[] data, Socket socket) {
+      try {
+         OutputStream out = socket.getOutputStream();
+         out.write(data);
+      } catch (IOException e) {
+         System.err.println("Couldn't send data");
+         System.exit(1);
+      }
+   }
+
+   public static byte[] receiveData(Socket socket) {
+      ArrayList<Byte> data = new ArrayList<Byte>();
+      try {
+         InputStream in = socket.getInputStream();
+         int b;
+         while ((b = in.read()) != -1) {
+            data.add((byte) b);
+         }
+      } catch (IOException e) {
+         System.err.println("Couldn't receive data");
+         System.exit(1);
+      }
+
+      byte[] bytes = new byte[data.size()]; 
+      for(int i = 0; i < data.size(); i++) { 
+         bytes[i] = data.get(i).byteValue(); // convert the arraylist to a byte array
+      }
+      return bytes;
    }
 
    public static String receiveString(Socket socket) {

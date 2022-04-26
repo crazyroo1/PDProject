@@ -59,6 +59,7 @@ public class SThread extends Thread {
 			}
 		}
 
+		routingTable[index] = new Route();
 		routingTable[index].ip = ip;
 		routingTable[index].type = RouteType.CLIENT;
 	}
@@ -74,6 +75,7 @@ public class SThread extends Thread {
 
 		// get ip of reader socket
 		String ipAddress = socket.getInetAddress().getHostAddress();
+		routingTable[index] = new Route();
 		routingTable[index].ip = ipAddress;
 		routingTable[index].type = RouteType.ROUTER;
 	}
